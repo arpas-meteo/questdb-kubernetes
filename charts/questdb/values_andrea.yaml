@@ -1,0 +1,62 @@
+image:
+  repository: questdb/questdb
+  pullPolicy: IfNotPresent
+  tag: 6.5.3
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+podAnnotations: {}
+podSecurityContext: {}
+securityContext: {}
+
+questdb:
+  serverConfig:
+    enabled: true
+    options:
+      shared.worker.count: 2
+  loggingConfig:
+    enabled: false
+    options: {}
+  env: {}
+
+service:
+  annotations: {}
+  type: ClusterIP
+  port: 9000
+  expose:
+    postgresql:
+      enabled: true
+      port: 8812
+    influxdb:
+      enabled: true
+      port: 9009
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 30Gi
+  # Uncomment existingClaim to enable existing pvc to be mounted for db storage
+  # size and accessMode will be ignored
+  # existiung pvc needs to be in the namespace where questdb will be deployed
+  # if you have problems with aws availability zones use nodeSelector to schedule nodes in the same az as volume
+  # existingClaim: PVC_NAME_HERE
+
+ingress:
+  enabled: true
+  annotations: {}
+  tls:
+    - hosts:
+        - questdb.alai.one
+      secretName: letsencrypt-nginx
+  ingressClassName: nginx
+  hosts:
+    - host: questdb.alai.one
+      paths:
+        - /
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
